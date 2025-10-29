@@ -1,4 +1,5 @@
 using ToDoApp.Services;
+using Microsoft.Azure.Cosmos;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -8,6 +9,21 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddControllers();
 builder.Services.AddSingleton<ToDoService>();
+builder.Services.AddSingleton<CosmosDbService>(ServiceProvider => 
+{
+    var configuration = ServiceProvider.GetRequiredService<IConfiguration>();
+    var cosmosDbConfig = configuration.GetSection("CosmosDb");
+    var account = cosmosDbConfig["Account"];
+    var key = cosmosDbConfig["Key"];
+    var databaseName = cosmosDbConfig["DatabaseName"];
+    var containerName = cosmosDbConfig["ContainerName"];
+
+    var cosmosClient = new CosmosClient(account, key);
+    
+    // Here you would typically initialize and return your CosmosDbService
+    return new CosmosDbService(cosmosClient, databaseName, containerName);
+});
+
 builder.Services.AddCors();
 var app = builder.Build();
 
