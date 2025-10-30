@@ -17,12 +17,12 @@ namespace ToDoApp.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            return Ok(_service.GetAllItems());
+            return Ok(_service.GetAllItemsAsync());
         }
         [HttpGet("{id}")]
         public ActionResult GetById(string id)
         {
-            var item = _service.GetItemById(id);
+            var item = _service.GetItemByIdAsync(id);
             if (item == null)
                 return NotFound();
             return Ok(item);
@@ -30,20 +30,20 @@ namespace ToDoApp.Controllers
         [HttpPost]
         public ActionResult CreateItem(ToDoItem item)
         {
-            var a = _service.AddItem(item);
+            var a = _service.AddItemAsync(item);
             return CreatedAtAction(nameof(GetById), new { id = a.Id }, a);
         }
         [HttpPut]
-        public IActionResult UpdateItem(ToDoItem item)
+        public Task UpdateItem(ToDoItem item)
         {
-            var updated = _service.UpdateItem(item);
-            return updated ? NoContent() : NotFound();
+            return _service.UpdateItemAsync(item.Id,item);
+          
         }
         [HttpDelete("{id}")]
         public IActionResult DeleteItem(string id)
         {
-            var deleted = _service.DeleteItem(id);
-            return deleted ? NoContent() : NotFound();
+           _service.DeleteItemAsync(id);
+            return NoContent();
         }
     }
 }

@@ -4,40 +4,32 @@ namespace ToDoApp.Services
 {
     public class ToDoService
     {
-        private readonly List<ToDoItem> _todos = new();
+        private readonly CosmosDbService _cosmosDbService;
 
-        public IEnumerable<ToDoItem> GetAllItems() => _todos;
-
-        public ToDoItem? GetItemById(string id)
+        public ToDoService(CosmosDbService cosmosDbService)
         {
-            if(_todos == null)
-                return null;
-            return _todos.FirstOrDefault(x => x.Id == id);
-
+            _cosmosDbService = cosmosDbService;
+        }
+        public Task <IEnumerable<ToDoItem>> GetAllItemsAsync()
+        {
+            return _cosmosDbService.GetItemsAsync();
+        }
+        public Task<ToDoItem> GetItemByIdAsync(string id)
+        {
+            return _cosmosDbService.GetItemAsync(id);
+        }
+        public Task AddItemAsync(ToDoItem item)
+        {
+            return _cosmosDbService.AddItemASync(item);
         }
 
-        public ToDoItem AddItem(ToDoItem item)
+        public Task UpdateItemAsync(string id, ToDoItem item)
         {
-            _todos.Add(item);
-            return item;
+            return _cosmosDbService.UpdateItemAsync(id,item);
         }
-
-        public bool UpdateItem(ToDoItem item)
+        public Task DeleteItemAsync(string id)
         {
-            var existingItem = GetItemById(item.Id);
-            if (existingItem == null)
-                return false;
-            existingItem.Title = item.Title;
-            existingItem.IsCompleted = item.IsCompleted;
-            return true;
-        }
-        public bool DeleteItem(string id)
-        {
-            var item = GetItemById(id);
-            if (item == null)
-                return false;
-            _todos.Remove(item);
-            return true;
+            return _cosmosDbService.DeleteItemAsync(id);
         }
     }
 }
