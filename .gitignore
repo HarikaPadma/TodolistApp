@@ -6,3 +6,5 @@
 .user
 ./node_modules
 ./packages/
+appsettings.json
+local.settings.json
